@@ -1,9 +1,18 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { NoteContext } from '../context/NoteContext'
 import Notecard from '../components/Notecard'
 
 function Home() {
-  const {notes,loading}=useContext(NoteContext)
+  const {notes,loading,getNotes}=useContext(NoteContext)
+  
+  // Refetch notes when navigating to Home to ensure fresh data
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      getNotes();
+    }
+  }, []) // Only run once when component mounts
+  
   console.log(notes)
 
   if(loading){

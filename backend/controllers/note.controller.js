@@ -7,7 +7,12 @@ export const createNote=async(req,res)=>{
           if(!title || !content){
             return res.status(400).json({message:"Title and content are required"});
           }
-          const newNote=new Note({title,content});
+          // Associate note with the authenticated user
+          const newNote=new Note({
+            title,
+            content,
+            user: req.user.id
+          });
             await newNote.save();
             res.status(201).json({message:"Note created successfully",note:newNote});
     }
@@ -17,7 +22,8 @@ export const createNote=async(req,res)=>{
 }
 export const getNotes=async(req,res)=>{
     try{
-        const notes=await Note.find().sort({createdAt:-1});
+        // Only get notes belonging to the authenticated user
+        const notes=await Note.find({ user: req.user.id }).sort({createdAt:-1});
         res.status(200).json({notes});
     }
     catch(error){
@@ -37,10 +43,16 @@ export const getNotes=async(req,res)=>{
          if (Object.keys(updatedData).length === 0) {
             return res.status(400).json({ message: "Please provide title or content to update" });
         }
-        const updatedNote=await Note.findByIdAndUpdate(id,updatedData,{new:true});
-        if(!updatedNote){
+        // Find note and verify it belongs to the user
+        const note = await Note.findById(id);
+        if(!note){
             return res.status(404).json({message:"Note not found"});
         }
+        // Check if note belongs to the authenticated user
+        if(note.user.toString() !== req.user.id){
+            return res.status(403).json({message:"Not authorized to update this note"});
+        }
+        const updatedNote=await Note.findByIdAndUpdate(id,updatedData,{new:true});
         res.status(200).json({message:"Note updated successfully",note:updatedNote});
     }
     catch(error){
@@ -53,10 +65,16 @@ export const getNotes=async(req,res)=>{
         if(!mongoose.Types.ObjectId.isValid(id)){
             return res.status(400).json({message:"Invalid note ID"});
         }
-        const deletedNote=await Note.findByIdAndDelete(id);
-        if(!deletedNote){
+        // Find note and verify it belongs to the user
+        const note = await Note.findById(id);
+        if(!note){
             return res.status(404).json({message:"Note not found"});
         }
+        // Check if note belongs to the authenticated user
+        if(note.user.toString() !== req.user.id){
+            return res.status(403).json({message:"Not authorized to delete this note"});
+        }
+        const deletedNote=await Note.findByIdAndDelete(id);
         res.status(200).json({message:"Note deleted successfully"});
     }
     catch(error){
@@ -72,6 +90,10 @@ export const getNotes=async(req,res)=>{
         const note=await Note.findById(id);
         if(!note){
             return res.status(404).json({message:"Note not found"});
+        }
+        // Check if note belongs to the authenticated user
+        if(note.user.toString() !== req.user.id){
+            return res.status(403).json({message:"Not authorized to view this note"});
         }
         res.status(200).json({note});
     }

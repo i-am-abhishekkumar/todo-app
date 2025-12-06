@@ -19,6 +19,8 @@ const Login = () => {
         try {
             const res = await axios.post('http://localhost:3000/api/auth/login', formData);
             localStorage.setItem('token', res.data.token);
+            // Dispatch event to notify NoteContext to refetch notes
+            window.dispatchEvent(new Event('tokenChanged'));
             navigate('/');
         } catch (err) {
             setError(err.response?.data?.message || 'Login failed');
@@ -69,6 +71,8 @@ const Login = () => {
 };
 
 export default Login;
+
+
 
 
 
