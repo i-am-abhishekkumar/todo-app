@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const BACKEND_URL = axios.create({
-    baseURL: "http://localhost:3000/api/notes/"
+    //baseURL: "http://localhost:3000/api/notes/"
+    baseURL:"https://techie-blogs-a40i.onrender.com/api/notes/"
 })
 
 // Add token to all requests automatically
