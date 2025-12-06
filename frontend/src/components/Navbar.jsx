@@ -28,7 +28,7 @@ function Navbar() {
         <Link to="/" className="flex items-center gap-2">
           <BookOpen className="w-7 h-7 text-blue-400" />
           <span className=" text-2xl text-blue-400 tracking-wide">
-            NoteKeeper
+            Techie-Blogs
           </span>
         </Link>
 
