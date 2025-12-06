@@ -156,6 +156,8 @@ npm run dev
 
 The application features:
 - Login/Signup pages
+<img width="1421" height="798" alt="Login-page" src="https://github.com/user-attachments/assets/14e94506-3528-45c9-9c3e-c3183a9d2360" />
+
 - Home page with notes grid
 - Create/Edit note page
 - Search functionality
