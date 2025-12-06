@@ -159,8 +159,14 @@ The application features:
 <img width="1421" height="798" alt="Login-page" src="https://github.com/user-attachments/assets/14e94506-3528-45c9-9c3e-c3183a9d2360" />
 
 - Home page with notes grid
+<img width="1292" height="802" alt="Show-blogs" src="https://github.com/user-attachments/assets/b325848b-c181-444c-8530-eb745c595735" />
+
 - Create/Edit note page
+<img width="1470" height="801" alt="Create-blog" src="https://github.com/user-attachments/assets/559431dc-50e3-4e02-be86-e883db2d5ff5" />
+
 - Search functionality
+- <img width="1470" height="801" alt="Seach-filter" src="https://github.com/user-attachments/assets/dc8911b8-cea0-48a6-a407-a6d049deedc0" />
+
 - Image upload support
 
 ## 👤 Author
