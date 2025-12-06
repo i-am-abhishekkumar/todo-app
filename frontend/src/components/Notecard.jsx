@@ -6,8 +6,28 @@ function Notecard({note}) {
     const [isEditing,setIsEditing]=useState(false)
     const [editData,setEditData]=useState({
         title:note.title,
-        content:note.content
+        content:note.content,
+        image: null
     })
+    const [imagePreview, setImagePreview] = useState(note.image ? `http://localhost:3000${note.image}` : null)
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setEditData({ ...editData, image: file });
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    const handleRemoveImage = () => {
+        setEditData({ ...editData, image: null });
+        setImagePreview(null);
+    }
 
     const handleUpdate=()=>{
         updateNote(note._id,editData)
@@ -38,6 +58,36 @@ function Notecard({note}) {
               setEditData({ ...editData, content: e.target.value })
             }
           />
+          
+          {/* Image Upload in Edit Mode */}
+          <div className="mb-3">
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+              Change Image (Optional)
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 cursor-pointer"
+            />
+            {imagePreview && (
+              <div className="relative mt-2">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded-lg"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+          
           <div className="flex gap-2">
             <button
               onClick={handleUpdate}
@@ -46,7 +96,15 @@ function Notecard({note}) {
               Save
             </button>
             <button
-              onClick={() => setIsEditing(false)}
+              onClick={() => {
+                setIsEditing(false);
+                setEditData({
+                  title: note.title,
+                  content: note.content,
+                  image: null
+                });
+                setImagePreview(note.image ? `http://localhost:3000${note.image}` : null);
+              }}
               className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-1.5 rounded-lg transition"
             >
               Cancel
@@ -59,6 +117,18 @@ function Notecard({note}) {
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {note.title}
           </h2>
+          {note.image && (
+            <div className="mt-2 mb-2">
+              <img
+                src={`http://localhost:3000${note.image}`}
+                alt={note.title}
+                className="w-full h-48 object-cover rounded-lg"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                }}
+              />
+            </div>
+          )}
           <p className="text-gray-600 dark:text-gray-300 mt-2 flex-1">
             {note.content}
           </p>
@@ -75,7 +145,15 @@ function Notecard({note}) {
 
             <div className="flex gap-2">
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={() => {
+                  setIsEditing(true);
+                  setEditData({
+                    title: note.title,
+                    content: note.content,
+                    image: null
+                  });
+                  setImagePreview(note.image ? `http://localhost:3000${note.image}` : null);
+                }}
                 className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg transition"
               >
                 Edit

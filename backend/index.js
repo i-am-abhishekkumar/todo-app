@@ -4,9 +4,15 @@ import mongoose from 'mongoose';
 import noteRoutes from './routes/note.route.js';
 import authRoutes from './routes/auth.note.js';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 dotenv.config()
 const app=express();
 const port=process.env.PORT;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // app.get('/',(req,res)=>{
 //     res.send('Hello Woreld2!');
@@ -20,6 +26,10 @@ catch(error){
 }
 app.use(express.json());
 app.use(cors());
+
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use("/api/notes",noteRoutes);
 app.use('/api/auth', authRoutes);
 

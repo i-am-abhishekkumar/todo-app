@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 import Note from "../models/note.model.js";
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const createNote=async(req,res)=>{
     try{
@@ -7,10 +13,18 @@ export const createNote=async(req,res)=>{
           if(!title || !content){
             return res.status(400).json({message:"Title and content are required"});
           }
+          
+          // Handle image upload
+          let imagePath = null;
+          if(req.file){
+            imagePath = `/uploads/${req.file.filename}`;
+          }
+          
           // Associate note with the authenticated user
           const newNote=new Note({
             title,
             content,
+            image: imagePath,
             user: req.user.id
           });
             await newNote.save();
@@ -40,9 +54,7 @@ export const getNotes=async(req,res)=>{
         const updatedData={};
         if(title) updatedData.title=title;
         if(content) updatedData.content=content;
-         if (Object.keys(updatedData).length === 0) {
-            return res.status(400).json({ message: "Please provide title or content to update" });
-        }
+        
         // Find note and verify it belongs to the user
         const note = await Note.findById(id);
         if(!note){
@@ -51,6 +63,22 @@ export const getNotes=async(req,res)=>{
         // Check if note belongs to the authenticated user
         if(note.user.toString() !== req.user.id){
             return res.status(403).json({message:"Not authorized to update this note"});
+        }
+        
+        // Handle new image upload
+        if(req.file){
+            // Delete old image if it exists
+            if(note.image){
+                const oldImagePath = path.join(__dirname, '..', note.image);
+                if(fs.existsSync(oldImagePath)){
+                    fs.unlinkSync(oldImagePath);
+                }
+            }
+            updatedData.image = `/uploads/${req.file.filename}`;
+        }
+        
+         if (Object.keys(updatedData).length === 0) {
+            return res.status(400).json({ message: "Please provide title, content, or image to update" });
         }
         const updatedNote=await Note.findByIdAndUpdate(id,updatedData,{new:true});
         res.status(200).json({message:"Note updated successfully",note:updatedNote});
@@ -74,6 +102,15 @@ export const getNotes=async(req,res)=>{
         if(note.user.toString() !== req.user.id){
             return res.status(403).json({message:"Not authorized to delete this note"});
         }
+        
+        // Delete associated image file if it exists
+        if(note.image){
+            const imagePath = path.join(__dirname, '..', note.image);
+            if(fs.existsSync(imagePath)){
+                fs.unlinkSync(imagePath);
+            }
+        }
+        
         const deletedNote=await Note.findByIdAndDelete(id);
         res.status(200).json({message:"Note deleted successfully"});
     }

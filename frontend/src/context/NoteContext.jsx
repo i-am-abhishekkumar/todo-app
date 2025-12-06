@@ -76,13 +76,33 @@ useEffect(()=>{
 
 // create a note
 const createNote = async(note) => {
-    const res=await BACKEND_URL.post("/create-note",note)
+    const formData = new FormData();
+    formData.append('title', note.title);
+    formData.append('content', note.content);
+    if (note.image) {
+        formData.append('image', note.image);
+    }
+    const res=await BACKEND_URL.post("/create-note", formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
     setNotes([res.data.note,...notes])
 }
 
 // update a note
-const updateNote = async(id, updateNote) => {
-    const res=await BACKEND_URL.put(`/update-note/${id}`,updateNote)
+const updateNote = async(id, updateData) => {
+    const formData = new FormData();
+    if (updateData.title) formData.append('title', updateData.title);
+    if (updateData.content) formData.append('content', updateData.content);
+    if (updateData.image) {
+        formData.append('image', updateData.image);
+    }
+    const res=await BACKEND_URL.put(`/update-note/${id}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    })
     setNotes(notes.map((note)=>(note._id===id ? res.data.note : note)))
 }
 

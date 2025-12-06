@@ -11,6 +11,10 @@ const noteSchema=new mongoose.Schema(
         type:String,
         required:true,
     },
+    image: {
+        type: String, // Store image path/URL
+        default: null,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
